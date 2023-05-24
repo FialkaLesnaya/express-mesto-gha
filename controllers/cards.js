@@ -1,23 +1,39 @@
 const Card = require("../models/card.js");
 
+const handleError = (res, statusCode, message) => {
+  res.status(statusCode).send({ message });
+};
+
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => handleError(res, 500, err.message));
 };
 
 module.exports.createCard = (req, res) => {
-  const { name, link, likes, createdAt } = req.body;
-  Card.create({ name, link, owner: req.user._id, likes, createdAt })
+  const { name, link } = req.body;
+  const userId = req.user._id;
+
+  if (!name || !link) {
+    return handleError(res, 400, "Переданы некорректные данные");
+  }
+
+  Card.create({ name, link, owner: userId })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => handleError(res, 500, err.message));
 };
 
 module.exports.getCardById = (req, res) => {
   const cardId = req.params.cardId;
+
   Card.findById(cardId)
-    .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((card) => {
+      if (!card) {
+        return handleError(res, 404, "Карточка не найдена");
+      }
+      res.send({ data: card });
+    })
+    .catch((err) => handleError(res, 500, err.message));
 };
 
 module.exports.addLike = (req, res) => {
@@ -29,8 +45,13 @@ module.exports.addLike = (req, res) => {
     { $addToSet: { likes: userId } },
     { new: true }
   )
-    .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((card) => {
+      if (!card) {
+        return handleError(res, 404, "Карточка не найдена");
+      }
+      res.send({ data: card });
+    })
+    .catch((err) => handleError(res, 500, err.message));
 };
 
 module.exports.removeLike = (req, res) => {
@@ -38,6 +59,11 @@ module.exports.removeLike = (req, res) => {
   const userId = req.user._id;
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((card) => {
+      if (!card) {
+        return handleError(res, 404, "Карточка не найдена");
+      }
+      res.send({ data: card });
+    })
+    .catch((err) => handleError(res, 500, err.message));
 };
