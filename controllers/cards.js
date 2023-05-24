@@ -19,3 +19,25 @@ module.exports.getCardById = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
+
+module.exports.addLike = (req, res) => {
+  const { cardId } = req.params;
+  const userId = req.user._id;
+
+  Card.findByIdAndUpdate(
+    cardId,
+    { $addToSet: { likes: userId } },
+    { new: true }
+  )
+    .then((card) => res.send({ data: card }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+module.exports.removeLike = (req, res) => {
+  const { cardId } = req.params;
+  const userId = req.user._id;
+
+  Card.findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
+    .then((card) => res.send({ data: card }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
