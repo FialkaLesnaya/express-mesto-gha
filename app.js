@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const { NOT_FOUND_ERROR_CODE, handleError } = require("./utils/utils.js");
 
 const PORT = 3000;
 
@@ -23,6 +24,9 @@ app.use((req, res, next) => {
 
 app.use("/users", require("./routes/users"));
 app.use("/cards", require("./routes/cards"));
+app.use((req, res) => {
+  handleError(res, NOT_FOUND_ERROR_CODE, "Путь неизвестен");
+});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

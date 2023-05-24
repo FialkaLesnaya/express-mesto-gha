@@ -61,7 +61,12 @@ module.exports.addLike = (req, res) => {
     { $addToSet: { likes: userId } },
     { new: true }
   )
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) {
+        return handleError(res, NOT_FOUND_ERROR_CODE, "Карточка не найдена");
+      }
+      res.send({ data: card });
+    })
     .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
 };
 
@@ -74,7 +79,12 @@ module.exports.removeLike = (req, res) => {
   }
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) {
+        return handleError(res, NOT_FOUND_ERROR_CODE, "Карточка не найдена");
+      }
+      res.send({ data: card });
+    })
     .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
 };
 
@@ -86,6 +96,11 @@ module.exports.deleteCard = (req, res) => {
   }
 
   Card.findByIdAndRemove(cardId)
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) {
+        return handleError(res, NOT_FOUND_ERROR_CODE, "Карточка не найдена");
+      }
+      res.send({ data: card });
+    })
     .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
 };

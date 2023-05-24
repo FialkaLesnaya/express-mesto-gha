@@ -13,6 +13,6 @@ router.post("/", createCard);
 router.get("/:cardId", getCardById);
 router.put("/:cardId/likes", addLike);
 router.delete("/:cardId/likes", removeLike);
-router.delete("/cards/:cardId", deleteCard);
+router.delete("/:cardId", deleteCard);
 
 module.exports = router;
