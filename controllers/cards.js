@@ -40,7 +40,7 @@ module.exports.getCardById = (req, res) => {
   const cardId = req.params.cardId;
 
   if (!isValidId(cardId)) {
-    return handleError(res, NOT_FOUND_ERROR_CODE, "Карточка не найдена");
+    return handleError(res, NOT_CORRECT_ERROR_CODE, "Карточка не найдена");
   }
 
   Card.findById(cardId)
@@ -53,7 +53,7 @@ module.exports.addLike = (req, res) => {
   const userId = req.user._id;
 
   if (!isValidId(cardId)) {
-    return handleError(res, NOT_FOUND_ERROR_CODE, "Карточка не найдена");
+    return handleError(res, NOT_CORRECT_ERROR_CODE, "Карточка не найдена");
   }
 
   Card.findByIdAndUpdate(
@@ -75,7 +75,7 @@ module.exports.removeLike = (req, res) => {
   const userId = req.user._id;
 
   if (!isValidId(cardId)) {
-    return handleError(res, NOT_FOUND_ERROR_CODE, "Карточка не найдена");
+    return handleError(res, NOT_CORRECT_ERROR_CODE, "Карточка не найдена");
   }
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
@@ -92,7 +92,7 @@ module.exports.deleteCard = (req, res) => {
   const cardId = req.params.cardId;
 
   if (!isValidId(cardId)) {
-    return handleError(res, NOT_FOUND_ERROR_CODE, "Карточка не найдена");
+    return handleError(res, NOT_CORRECT_ERROR_CODE, "Карточка не найдена");
   }
 
   Card.findByIdAndRemove(cardId)

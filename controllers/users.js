@@ -41,11 +41,16 @@ module.exports.getUserById = (req, res) => {
   const userId = req.params.userId;
 
   if (!isValidId(userId)) {
-    return handleError(res, NOT_FOUND_ERROR_CODE, "Пользователь не найден");
+    return handleError(res, NOT_CORRECT_ERROR_CODE, "Пользователь не найден");
   }
 
   User.findById(userId)
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (!user) {
+        return handleError(res, NOT_FOUND_ERROR_CODE, "Пользователь не найден");
+      }
+      res.send({ data: user });
+    })
     .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
 };
 
