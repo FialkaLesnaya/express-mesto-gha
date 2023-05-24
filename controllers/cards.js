@@ -75,3 +75,16 @@ module.exports.removeLike = (req, res) => {
     })
     .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
 };
+
+module.exports.deleteCard = (req, res) => {
+  const cardId = req.params.cardId;
+
+  Card.findByIdAndRemove(cardId)
+    .then((card) => {
+      if (!card) {
+        return handleError(res, NOT_FOUND_ERROR_CODE, "Карточка не найдена");
+      }
+      res.send({ data: card });
+    })
+    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+};
