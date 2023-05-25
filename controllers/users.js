@@ -4,10 +4,11 @@ const {
   NOT_CORRECT_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
   handleError,
+  isValidId,
 } = require('../utils/utils');
 
-const handleUserError = (res, err) => {
-  if (err.name === 'ValidationError') {
+const handleUserError = (res, err, id) => {
+  if (err.name === 'ValidationError' || (id != null && !isValidId(id))) {
     return handleError(res, NOT_CORRECT_ERROR_CODE, 'Переданы некорректные данные');
   }
   return handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка');
@@ -37,7 +38,7 @@ module.exports.getUserById = (req, res) => {
       }
       return res.send({ data: user });
     })
-    .catch((err) => handleUserError(res, err));
+    .catch((err) => handleUserError(res, err, userId));
 };
 
 module.exports.updateUser = (req, res) => {
@@ -46,7 +47,7 @@ module.exports.updateUser = (req, res) => {
 
   return User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
-    .catch((err) => handleUserError(res, err));
+    .catch((err) => handleUserError(res, err, userId));
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -55,5 +56,5 @@ module.exports.updateAvatar = (req, res) => {
 
   return User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
-    .catch((err) => handleUserError(res, err));
+    .catch((err) => handleUserError(res, err, userId));
 };

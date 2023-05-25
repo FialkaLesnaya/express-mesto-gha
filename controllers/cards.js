@@ -4,10 +4,11 @@ const {
   NOT_CORRECT_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
   handleError,
+  isValidId,
 } = require('../utils/utils');
 
-const handleCardError = (res, err) => {
-  if (err.name === 'ValidationError') {
+const handleCardError = (res, err, id) => {
+  if (err.name === 'ValidationError' || (id != null && !isValidId(id))) {
     return handleError(res, NOT_CORRECT_ERROR_CODE, 'Переданы некорректные данные');
   }
   return handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка');
@@ -25,7 +26,7 @@ module.exports.createCard = (req, res) => {
 
   return Card.create({ name, link, owner: userId }, { runValidators: true })
     .then((card) => res.send({ data: card }))
-    .catch((err) => handleCardError(res, err));
+    .catch((err) => handleCardError(res, err, userId));
 };
 
 module.exports.getCardById = (req, res) => {
@@ -33,7 +34,7 @@ module.exports.getCardById = (req, res) => {
 
   return Card.findById(cardId, { runValidators: true })
     .then((card) => res.send({ data: card }))
-    .catch((err) => handleCardError(res, err));
+    .catch((err) => handleCardError(res, err, cardId));
 };
 
 module.exports.addLike = (req, res) => {
@@ -51,7 +52,7 @@ module.exports.addLike = (req, res) => {
       }
       return res.send({ data: card });
     })
-    .catch((err) => handleCardError(res, err));
+    .catch((err) => handleCardError(res, err, cardId));
 };
 
 module.exports.removeLike = (req, res) => {
@@ -69,7 +70,7 @@ module.exports.removeLike = (req, res) => {
       }
       return res.send({ data: card });
     })
-    .catch((err) => handleCardError(res, err));
+    .catch((err) => handleCardError(res, err, cardId));
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -82,5 +83,5 @@ module.exports.deleteCard = (req, res) => {
       }
       return res.send({ data: card });
     })
-    .catch((err) => handleCardError(res, err));
+    .catch((err) => handleCardError(res, err, cardId));
 };
