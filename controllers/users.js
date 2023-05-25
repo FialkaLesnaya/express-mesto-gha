@@ -22,7 +22,7 @@ module.exports.getUsers = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
-  return User.create({ name, about, avatar })
+  return User.create({ name, about, avatar }, { runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => handleUserError(res, err));
 };
@@ -30,7 +30,7 @@ module.exports.createUser = (req, res) => {
 module.exports.getUserById = (req, res) => {
   const { userId } = req.params;
 
-  return User.findById(userId)
+  return User.findById(userId, { runValidators: true })
     .then((user) => {
       if (!user) {
         return handleError(res, NOT_FOUND_ERROR_CODE, 'Пользователь не найден');
@@ -44,7 +44,7 @@ module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   const userId = req.user._id;
 
-  return User.findByIdAndUpdate(userId, { name, about }, { new: true })
+  return User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => handleUserError(res, err));
 };
@@ -53,7 +53,7 @@ module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   const userId = req.user._id;
 
-  return User.findByIdAndUpdate(userId, { avatar }, { new: true })
+  return User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => handleUserError(res, err));
 };
