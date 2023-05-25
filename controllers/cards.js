@@ -1,16 +1,16 @@
-const Card = require("../models/card.js");
+const Card = require('../models/card');
 const {
   DEFAULT_ERROR_CODE,
   NOT_CORRECT_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
   handleError,
   isValidId,
-} = require("../utils/utils.js");
+} = require('../utils/utils');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
 };
 
 module.exports.createCard = (req, res) => {
@@ -18,34 +18,34 @@ module.exports.createCard = (req, res) => {
   const userId = req.user._id;
 
   if (
-    !name ||
-    name.length < 2 ||
-    name.length > 30 ||
-    !link ||
-    !isValidId(userId)
+    !name
+    || name.length < 2
+    || name.length > 30
+    || !link
+    || !isValidId(userId)
   ) {
     return handleError(
       res,
       NOT_CORRECT_ERROR_CODE,
-      "Переданы некорректные данные"
+      'Переданы некорректные данные',
     );
   }
 
-  Card.create({ name, link, owner: userId })
+  return Card.create({ name, link, owner: userId })
     .then((card) => res.send({ data: card }))
-    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
 };
 
 module.exports.getCardById = (req, res) => {
-  const cardId = req.params.cardId;
+  const { cardId } = req.params;
 
   if (!isValidId(cardId)) {
-    return handleError(res, NOT_CORRECT_ERROR_CODE, "Карточка не найдена");
+    return handleError(res, NOT_CORRECT_ERROR_CODE, 'Карточка не найдена');
   }
 
-  Card.findById(cardId)
+  return Card.findById(cardId)
     .then((card) => res.send({ data: card }))
-    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
 };
 
 module.exports.addLike = (req, res) => {
@@ -53,21 +53,21 @@ module.exports.addLike = (req, res) => {
   const userId = req.user._id;
 
   if (!isValidId(cardId)) {
-    return handleError(res, NOT_CORRECT_ERROR_CODE, "Карточка не найдена");
+    return handleError(res, NOT_CORRECT_ERROR_CODE, 'Карточка не найдена');
   }
 
-  Card.findByIdAndUpdate(
+  return Card.findByIdAndUpdate(
     cardId,
     { $addToSet: { likes: userId } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
-        return handleError(res, NOT_FOUND_ERROR_CODE, "Карточка не найдена");
+        return handleError(res, NOT_FOUND_ERROR_CODE, 'Карточка не найдена');
       }
-      res.send({ data: card });
+      return res.send({ data: card });
     })
-    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
 };
 
 module.exports.removeLike = (req, res) => {
@@ -75,32 +75,32 @@ module.exports.removeLike = (req, res) => {
   const userId = req.user._id;
 
   if (!isValidId(cardId)) {
-    return handleError(res, NOT_CORRECT_ERROR_CODE, "Карточка не найдена");
+    return handleError(res, NOT_CORRECT_ERROR_CODE, 'Карточка не найдена');
   }
 
-  Card.findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
+  return Card.findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
     .then((card) => {
       if (!card) {
-        return handleError(res, NOT_FOUND_ERROR_CODE, "Карточка не найдена");
+        return handleError(res, NOT_FOUND_ERROR_CODE, 'Карточка не найдена');
       }
-      res.send({ data: card });
+      return res.send({ data: card });
     })
-    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
 };
 
 module.exports.deleteCard = (req, res) => {
-  const cardId = req.params.cardId;
+  const { cardId } = req.params;
 
   if (!isValidId(cardId)) {
-    return handleError(res, NOT_CORRECT_ERROR_CODE, "Карточка не найдена");
+    return handleError(res, NOT_CORRECT_ERROR_CODE, 'Карточка не найдена');
   }
 
-  Card.findByIdAndRemove(cardId)
+  return Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
-        return handleError(res, NOT_FOUND_ERROR_CODE, "Карточка не найдена");
+        return handleError(res, NOT_FOUND_ERROR_CODE, 'Карточка не найдена');
       }
-      res.send({ data: card });
+      return res.send({ data: card });
     })
-    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
 };

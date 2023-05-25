@@ -1,57 +1,57 @@
-const User = require("../models/user.js");
+const User = require('../models/user');
 const {
   DEFAULT_ERROR_CODE,
   NOT_CORRECT_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
   handleError,
   isValidId,
-} = require("../utils/utils.js");
+} = require('../utils/utils');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
 };
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   if (
-    !name ||
-    name.length < 2 ||
-    name.length > 30 ||
-    !about ||
-    about.length < 2 ||
-    about.length > 30 ||
-    !avatar
+    !name
+    || name.length < 2
+    || name.length > 30
+    || !about
+    || about.length < 2
+    || about.length > 30
+    || !avatar
   ) {
     return handleError(
       res,
       NOT_CORRECT_ERROR_CODE,
-      "Переданы некорректные данные"
+      'Переданы некорректные данные',
     );
   }
 
-  User.create({ name, about, avatar })
+  return User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
 };
 
 module.exports.getUserById = (req, res) => {
-  const userId = req.params.userId;
+  const { userId } = req.params;
 
   if (!isValidId(userId)) {
-    return handleError(res, NOT_CORRECT_ERROR_CODE, "Пользователь не найден");
+    return handleError(res, NOT_CORRECT_ERROR_CODE, 'Пользователь не найден');
   }
 
-  User.findById(userId)
+  return User.findById(userId)
     .then((user) => {
       if (!user) {
-        return handleError(res, NOT_FOUND_ERROR_CODE, "Пользователь не найден");
+        return handleError(res, NOT_FOUND_ERROR_CODE, 'Пользователь не найден');
       }
-      res.send({ data: user });
+      return res.send({ data: user });
     })
-    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
 };
 
 module.exports.updateUser = (req, res) => {
@@ -59,30 +59,30 @@ module.exports.updateUser = (req, res) => {
   const userId = req.user._id;
 
   if (
-    (name && (name.length < 2 || name.length > 30)) ||
-    (about && (about.length < 2 || about.length > 30)) ||
-    !isValidId(userId)
+    (name && (name.length < 2 || name.length > 30))
+    || (about && (about.length < 2 || about.length > 30))
+    || !isValidId(userId)
   ) {
     return handleError(
       res,
       NOT_CORRECT_ERROR_CODE,
-      "Переданы некорректные данные"
+      'Переданы некорректные данные',
     );
   }
 
-  User.findByIdAndUpdate(userId, { name, about }, { new: true })
+  return User.findByIdAndUpdate(userId, { name, about }, { new: true })
     .then((user) => res.send({ data: user }))
-    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
 };
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   const userId = req.user._id;
   if (!isValidId(userId)) {
-    return handleError(res, NOT_FOUND_ERROR_CODE, "Пользователь не найден");
+    return handleError(res, NOT_FOUND_ERROR_CODE, 'Пользователь не найден');
   }
 
-  User.findByIdAndUpdate(userId, { avatar }, { new: true })
+  return User.findByIdAndUpdate(userId, { avatar }, { new: true })
     .then((user) => res.send({ data: user }))
-    .catch((err) => handleError(res, DEFAULT_ERROR_CODE, err.message));
+    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
 };
