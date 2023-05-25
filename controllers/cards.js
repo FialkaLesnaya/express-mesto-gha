@@ -24,7 +24,9 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const userId = req.user._id;
 
-  return Card.create({ name, link, owner: userId }, { runValidators: true })
+  return Card.create({
+    name, link, owner: userId,
+  })
     .then((card) => res.send({ data: card }))
     .catch((err) => handleCardError(res, err, userId));
 };
@@ -32,7 +34,7 @@ module.exports.createCard = (req, res) => {
 module.exports.getCardById = (req, res) => {
   const { cardId } = req.params;
 
-  return Card.findById(cardId, { runValidators: true })
+  return Card.findById(cardId)
     .then((card) => res.send({ data: card }))
     .catch((err) => handleCardError(res, err, cardId));
 };
@@ -76,7 +78,7 @@ module.exports.removeLike = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
 
-  return Card.findByIdAndRemove(cardId, { runValidators: true })
+  return Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
         return handleError(res, NOT_FOUND_ERROR_CODE, 'Карточка не найдена');

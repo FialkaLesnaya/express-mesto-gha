@@ -23,7 +23,7 @@ module.exports.getUsers = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
-  return User.create({ name, about, avatar }, { runValidators: true })
+  return User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => handleUserError(res, err));
 };
@@ -31,7 +31,7 @@ module.exports.createUser = (req, res) => {
 module.exports.getUserById = (req, res) => {
   const { userId } = req.params;
 
-  return User.findById(userId, { runValidators: true })
+  return User.findById(userId)
     .then((user) => {
       if (!user) {
         return handleError(res, NOT_FOUND_ERROR_CODE, 'Пользователь не найден');
