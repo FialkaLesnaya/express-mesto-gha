@@ -99,3 +99,9 @@ module.exports.login = (req, res) => {
     })
     .catch((err) => handleUserError(res, err));
 };
+
+module.exports.getUsersMe = (req) => {
+  const userId = req.user._id;
+
+  return this.getUserById(userId);
+};
