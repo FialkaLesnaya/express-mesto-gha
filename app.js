@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { NOT_FOUND_ERROR_CODE, handleError } = require('./utils/utils');
 const { createUser, login } = require('./routes/users');
+const { errorMiddleware } = require('./middlewares/error');
 
 const PORT = 3000;
 
@@ -14,6 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.connect('mongodb://127.0.0.1/mestodb', {
   useNewUrlParser: true,
 });
+
+app.use(errorMiddleware);
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
