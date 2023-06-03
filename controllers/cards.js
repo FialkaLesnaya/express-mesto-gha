@@ -77,11 +77,16 @@ module.exports.removeLike = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
+  const userId = req.user._id;
 
   return Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
         return handleError(res, NOT_FOUND_ERROR_CODE, 'Карточка не найдена');
+      }
+
+      if (card.userId !== userId) {
+        return handleError(res, 409, 'Нет разрешения на удаление этой карточки');
       }
       return res.send({ data: card });
     })
