@@ -7,7 +7,7 @@ const {
   removeLike,
   deleteCard,
 } = require('../controllers/cards');
-const authMiddleware = require('../middlewares/auth');
+const { authMiddleware } = require('../middlewares/auth');
 
 router.get('/', authMiddleware, getCards);
 router.post('/', authMiddleware, createCard);

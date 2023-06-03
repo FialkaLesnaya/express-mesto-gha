@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { NOT_FOUND_ERROR_CODE, handleError } = require('./utils/utils');
-const { createUser, login } = require('./routes/users');
 const { errorMiddleware } = require('./middlewares/error');
 
 const PORT = 3000;
@@ -20,9 +19,6 @@ app.use(errorMiddleware);
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
-
-app.post('/signin', login);
-app.post('/signup', createUser);
 
 app.use((req, res) => {
   handleError(res, NOT_FOUND_ERROR_CODE, 'Путь неизвестен');
