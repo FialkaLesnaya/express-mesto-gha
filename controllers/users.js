@@ -78,6 +78,7 @@ module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   return User.findOne({ email })
+    .select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
