@@ -4,7 +4,7 @@ module.exports.authMiddleware = (req, res, next) => {
   const token = req.headers.authorization;
 
   if (!token) {
-    return res.status(401).json({ error: 'Отсутствует токен авторизации' });
+    return res.status(401).send({ error: 'Отсутствует токен авторизации' });
   }
 
   try {
@@ -14,6 +14,6 @@ module.exports.authMiddleware = (req, res, next) => {
 
     return next();
   } catch (error) {
-    return res.status(401).json({ error: 'Недействительный токен авторизации' });
+    return res.status(401).send({ error: 'Недействительный токен авторизации' });
   }
 };
