@@ -1,4 +1,5 @@
-const bcrypt = require('bcryptjs'); // импортируем bcrypt
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
   DEFAULT_ERROR_CODE,
@@ -82,21 +83,19 @@ module.exports.login = (req, res) => {
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
 
-      return bcrypt.compare(password, user.password);
-    })
-    .then((matched) => {
-      if (!matched) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return Promise.reject(new Error('Неправильные почта или пароль'));
+          }
+          const token = jwt.sign(
+            { _id: user._id },
+            'jwt',
+            { expiresIn: '7d' }, // токен будет просрочен через час после создания
+          );
 
-      return res
-        .cookie('jwt', {
-          _id: '646e8c25df6918733922ab22',
-        }, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-        })
-        .end();
+          return res.send({ token });
+        });
     })
     .catch((err) => handleUserError(res, err));
 };
