@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-function authMiddleware(req, res, next) {
+module.exports.authMiddleware = (req, res, next) => {
   const token = req.headers.authorization;
 
   if (!token) {
@@ -12,8 +12,8 @@ function authMiddleware(req, res, next) {
 
     req.user = payload;
 
-    next();
+    return next();
   } catch (error) {
     return res.status(401).json({ error: 'Недействительный токен авторизации' });
   }
-}
+};

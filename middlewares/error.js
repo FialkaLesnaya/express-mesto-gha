@@ -1,6 +1,4 @@
-function errorMiddleware(err, req, res) {
-  console.error(err.stack);
-
+module.exports.errorMiddleware = (err, req, res) => {
   if (err.name === 'ValidationError') {
     return res.status(400).json({ error: 'Ошибка валидации данных' });
   }
@@ -10,4 +8,4 @@ function errorMiddleware(err, req, res) {
   }
 
   return res.status(500).json({ error: 'Внутренняя ошибка сервера' });
-}
+};
