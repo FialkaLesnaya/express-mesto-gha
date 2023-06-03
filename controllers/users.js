@@ -72,3 +72,31 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => handleUserError(res, err, userId));
 };
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      return bcrypt.compare(password, user.password);
+    })
+    .then((matched) => {
+      if (!matched) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      return res
+        .cookie('jwt', {
+          _id: '646e8c25df6918733922ab22',
+        }, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+        })
+        .end();
+    })
+    .catch((err) => handleUserError(res, err));
+};
