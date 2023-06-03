@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { NOT_FOUND_ERROR_CODE, handleError } = require('./utils/utils');
+const { createUser, login } = require('./routes/users');
 
 const PORT = 3000;
 
@@ -14,16 +15,11 @@ mongoose.connect('mongodb://127.0.0.1/mestodb', {
   useNewUrlParser: true,
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '646e8c25df6918733922ab22', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
-
-  next();
-});
-
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
+
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.use((req, res) => {
   handleError(res, NOT_FOUND_ERROR_CODE, 'Путь неизвестен');
