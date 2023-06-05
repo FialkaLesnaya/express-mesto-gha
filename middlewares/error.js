@@ -1,4 +1,5 @@
 module.exports.errorMiddleware = (err, req, res, next) => {
+  console.log('eror name', err.name);
   if (err.name === 'ValidationError') {
     return res.status(400).send({ message: 'Ошибка валидации данных' }).then(() => next());
   }

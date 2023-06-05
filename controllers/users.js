@@ -39,7 +39,15 @@ module.exports.createUser = (req, res) => {
       email,
       password: hash,
     }))
-    .then((user) => res.send({ data: { ...user, password } }));
+    .then((user) => res.send({
+      data: {
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+        password,
+      },
+    }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -80,18 +88,18 @@ module.exports.login = (req, res) => {
     .select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(new Error('1Неправильные почта или пароль'));
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
+            return Promise.reject(new Error('2Неправильные почта или пароль'));
           }
           const token = jwt.sign(
             { _id: user._id },
             'jwt',
-            { expiresIn: '7d' }, // токен будет просрочен через час после создания
+            { expiresIn: '7d' },
           );
 
           return res.send({ token });
