@@ -40,13 +40,11 @@ module.exports.createUser = (req, res) => {
       password: hash,
     }))
     .then((user) => res.send({
-      data: {
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        email: user.email,
-        password,
-      },
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      password,
     }));
 };
 
@@ -102,7 +100,9 @@ module.exports.login = (req, res) => {
             { expiresIn: '7d' },
           );
 
-          return res.send({ token });
+          res.body = { token };
+
+          return res.json();
         });
     });
 };

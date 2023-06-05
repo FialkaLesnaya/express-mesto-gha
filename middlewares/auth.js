@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 module.exports.authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization;
+  const token = req.headers.authorization || req.body.token;
 
   if (!token) {
     return res.status(401).send({ message: 'Отсутствует токен авторизации' });
