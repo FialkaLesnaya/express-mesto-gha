@@ -39,8 +39,7 @@ module.exports.createUser = (req, res) => {
       email,
       password: hash,
     }))
-    .then((user) => res.send({ data: user }))
-    .catch((err) => handleUserError(res, err));
+    .then((user) => res.send({ data: { ...user, password } }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -97,8 +96,7 @@ module.exports.login = (req, res) => {
 
           return res.send({ token });
         });
-    })
-    .catch((err) => handleUserError(res, err));
+    });
 };
 
 module.exports.getUsersMe = (req) => {

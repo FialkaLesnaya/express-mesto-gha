@@ -1,9 +1,9 @@
 const Joi = require('joi');
 
 module.exports.validateUserBody = Joi.object({
-  name: Joi.string().required(),
-  about: Joi.string().required(),
-  avatar: Joi.string().required(),
+  name: Joi.string(),
+  about: Joi.string(),
+  avatar: Joi.string(),
   email: Joi.string().email().required(),
   password: Joi.string().required(),
 });
