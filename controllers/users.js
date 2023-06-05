@@ -39,7 +39,14 @@ module.exports.createUser = (req, res) => {
       email,
       password: hash,
     }))
-    .then((user) => res.send(user));
+    .then((user) => res.send({
+      _id: user._id,
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      password,
+    }));
 };
 
 module.exports.getUserById = (req, res) => {
