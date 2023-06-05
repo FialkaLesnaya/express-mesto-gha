@@ -1,4 +1,4 @@
-const Joi = require('celebrate');
+const Joi = require('joi');
 
 module.exports.validateUserBody = Joi.object({
   name: Joi.string().required(),
