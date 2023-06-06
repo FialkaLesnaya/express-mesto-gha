@@ -4,6 +4,7 @@ const User = require('../models/user');
 const {
   NOT_FOUND_ERROR_CODE,
   handleError,
+  IS_EXIST_EMAIL_ERROR_CODE,
 } = require('../utils/utils');
 
 module.exports.getUsers = (req, res) => {
@@ -11,7 +12,7 @@ module.exports.getUsers = (req, res) => {
     .then((users) => res.send({ data: users }));
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name,
     about,
@@ -22,7 +23,9 @@ module.exports.createUser = (req, res) => {
 
   return User.findOne({ email }).then((existingUser) => {
     if (existingUser) {
-      return Promise.reject(new Error('Пользователь существует'));
+      const error = new Error();
+      error.code = IS_EXIST_EMAIL_ERROR_CODE;
+      throw error;
     }
 
     return bcrypt.hash(password, 10)
@@ -40,7 +43,7 @@ module.exports.createUser = (req, res) => {
         avatar: user.avatar,
         email: user.email,
       }));
-  });
+  }).catch((error) => next(error));
 };
 
 module.exports.getUserById = (req, res) => {
