@@ -20,21 +20,27 @@ module.exports.createUser = (req, res) => {
     password,
   } = req.body;
 
-  return bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
-    .then((user) => res.send({
-      _id: user._id,
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      email: user.email,
-    }));
+  return User.findOne({ email }).then((existingUser) => {
+    if (existingUser) {
+      return Promise.reject(new Error('Пользователь существует'));
+    }
+
+    return bcrypt.hash(password, 10)
+      .then((hash) => User.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      }))
+      .then((user) => res.send({
+        _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      }));
+  });
 };
 
 module.exports.getUserById = (req, res) => {
