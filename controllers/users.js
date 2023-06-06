@@ -2,24 +2,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
-  DEFAULT_ERROR_CODE,
-  NOT_CORRECT_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
   handleError,
-  isValidId,
 } = require('../utils/utils');
-
-const handleUserError = (res, err, id) => {
-  if (err.name === 'ValidationError' || (id != null && !isValidId(id))) {
-    return handleError(res, NOT_CORRECT_ERROR_CODE, 'Переданы некорректные данные');
-  }
-  return handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка');
-};
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
-    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
+    .then((users) => res.send({ data: users }));
 };
 
 module.exports.createUser = (req, res) => {
@@ -57,8 +46,7 @@ module.exports.getUserById = (req, res) => {
         return handleError(res, NOT_FOUND_ERROR_CODE, 'Пользователь не найден');
       }
       return res.send({ data: user });
-    })
-    .catch((err) => handleUserError(res, err, userId));
+    });
 };
 
 module.exports.updateUser = (req, res) => {
@@ -66,8 +54,7 @@ module.exports.updateUser = (req, res) => {
   const userId = req.user._id;
 
   return User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => handleUserError(res, err, userId));
+    .then((user) => res.send({ data: user }));
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -75,8 +62,7 @@ module.exports.updateAvatar = (req, res) => {
   const userId = req.user._id;
 
   return User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => handleUserError(res, err, userId));
+    .then((user) => res.send({ data: user }));
 };
 
 module.exports.login = (req, res) => {
@@ -86,13 +72,13 @@ module.exports.login = (req, res) => {
     .select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('1Неправильные почта или пароль'));
+        return Promise.reject(new Error('Неправильные почта или пароль'));
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('2Неправильные почта или пароль'));
+            return Promise.reject(new Error('Неправильные почта или пароль'));
           }
           const token = jwt.sign(
             { _id: user._id },

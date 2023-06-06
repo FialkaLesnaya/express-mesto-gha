@@ -1,23 +1,12 @@
 const Card = require('../models/card');
 const {
-  DEFAULT_ERROR_CODE,
-  NOT_CORRECT_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
   handleError,
-  isValidId,
 } = require('../utils/utils');
-
-const handleCardError = (res, err, id) => {
-  if (err.name === 'ValidationError' || (id != null && !isValidId(id))) {
-    return handleError(res, NOT_CORRECT_ERROR_CODE, 'Переданы некорректные данные');
-  }
-  return handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка');
-};
 
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
-    .catch(() => handleError(res, DEFAULT_ERROR_CODE, 'Произошла ошибка'));
+    .then((cards) => res.send({ data: cards }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -27,16 +16,14 @@ module.exports.createCard = (req, res) => {
   return Card.create({
     name, link, owner: userId,
   })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => handleCardError(res, err, userId));
+    .then((card) => res.send({ data: card }));
 };
 
 module.exports.getCardById = (req, res) => {
   const { cardId } = req.params;
 
   return Card.findById(cardId)
-    .then((card) => res.send({ data: card }))
-    .catch((err) => handleCardError(res, err, cardId));
+    .then((card) => res.send({ data: card }));
 };
 
 module.exports.addLike = (req, res) => {
@@ -53,8 +40,7 @@ module.exports.addLike = (req, res) => {
         return handleError(res, NOT_FOUND_ERROR_CODE, 'Карточка не найдена');
       }
       return res.send({ data: card });
-    })
-    .catch((err) => handleCardError(res, err, cardId));
+    });
 };
 
 module.exports.removeLike = (req, res) => {
@@ -71,8 +57,7 @@ module.exports.removeLike = (req, res) => {
         return handleError(res, NOT_FOUND_ERROR_CODE, 'Карточка не найдена');
       }
       return res.send({ data: card });
-    })
-    .catch((err) => handleCardError(res, err, cardId));
+    });
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -89,6 +74,5 @@ module.exports.deleteCard = (req, res) => {
         return handleError(res, 409, 'Нет разрешения на удаление этой карточки');
       }
       return res.send({ data: card });
-    })
-    .catch((err) => handleCardError(res, err, cardId));
+    });
 };
