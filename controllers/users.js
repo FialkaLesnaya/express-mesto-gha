@@ -4,6 +4,7 @@ const User = require('../models/user');
 const {
   NOT_FOUND_ERROR_CODE,
   IS_EXIST_ERROR_CODE,
+  AUTH_ERROR_CODE,
 } = require('../utils/utils');
 const { JWT_SECRET } = require('../utils/config');
 
@@ -25,7 +26,7 @@ module.exports.createUser = (req, res, next) => {
   return User.findOne({ email }).then((existingUser) => {
     if (existingUser) {
       const error = new Error();
-      error.code = IS_EXIST_ERROR_CODE;
+      error.code = AUTH_ERROR_CODE;
       throw error;
     }
 
