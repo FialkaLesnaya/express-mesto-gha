@@ -5,10 +5,14 @@ const {
 } = require('../utils/utils');
 
 module.exports.authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization || req.body.token || req.cookies.token;
+  let token = req.headers.authorization || req.body.token || req.cookies.token;
 
   if (!token) {
     return res.status(AUTH_ERROR_CODE).send({ message: 'Отсутствует токен авторизации' });
+  }
+
+  if (token.startsWith('Bearer ')) {
+    token = token.slice(7);
   }
 
   try {
