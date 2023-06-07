@@ -44,7 +44,8 @@ module.exports.addLike = (req, res, next) => {
         error.code = NOT_FOUND_ERROR_CODE;
         throw error;
       }
-      if (card.owner !== userId) {
+
+      if (card.owner.toString() !== userId) {
         const error = new Error();
         error.code = NO_ACCESS_ERROR_CODE;
         throw error;
@@ -69,7 +70,7 @@ module.exports.removeLike = (req, res, next) => {
         error.code = NOT_FOUND_ERROR_CODE;
         throw error;
       }
-      if (card.owner !== userId) {
+      if (card.owner.toString() !== userId) {
         const error = new Error();
         error.code = NO_ACCESS_ERROR_CODE;
         throw error;
@@ -91,7 +92,7 @@ module.exports.deleteCard = (req, res, next) => {
         throw error;
       }
 
-      if (card.owner !== userId) {
+      if (card.owner.toString() !== userId) {
         const error = new Error();
         error.code = NO_ACCESS_ERROR_CODE;
         throw error;
