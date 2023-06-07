@@ -107,7 +107,6 @@ module.exports.login = (req, res, next) => {
           );
 
           res.body = { token };
-          console.log(token);
 
           return res.json();
         });
