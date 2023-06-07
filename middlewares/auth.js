@@ -11,12 +11,14 @@ module.exports.authMiddleware = (req, res, next) => {
   }
 
   try {
+    // console.log('token', token);
     const payload = jwt.verify(token, 'jwt');
+    // console.log('token2', token);
     req.headers.authorization = token;
     req.user = payload;
 
     return next();
   } catch (error) {
-    return res.status(AUTH_ERROR_CODE).send({ message: `Недействительный токен авторизации ${token}` });
+    return res.status(AUTH_ERROR_CODE).send({ message: `Недействительный токен авторизации ${req.headers.authorization} или ${req.body.token} или ${req.cookies.token}` });
   }
 };
