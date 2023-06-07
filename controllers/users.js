@@ -107,8 +107,10 @@ module.exports.login = (req, res, next) => {
           );
 
           res.body = { token };
+          // eslint-disable-next-line no-console
+          console.log(token);
 
-          return res.json({ token });
+          return res.json(token);
         });
     })
     .catch((error) => next(error));

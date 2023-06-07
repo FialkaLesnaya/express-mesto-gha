@@ -13,7 +13,7 @@ module.exports.errorMiddleware = (err, _, res, next) => {
   }
 
   if (err.code === AUTH_ERROR_CODE) {
-    return res.status(AUTH_ERROR_CODE).send({ message: 'Пользователь с таким email уже существует' }).then(() => next());
+    return res.status(AUTH_ERROR_CODE).send({ message: 'Пользователь с таким email не существует' }).then(() => next());
   }
 
   if (err.code === IS_EXIST_ERROR_CODE) {
