@@ -26,7 +26,7 @@ module.exports.createUser = (req, res, next) => {
   return User.findOne({ email }).then((existingUser) => {
     if (existingUser) {
       const error = new Error();
-      error.code = AUTH_ERROR_CODE;
+      error.code = IS_EXIST_ERROR_CODE;
       throw error;
     }
 
@@ -89,7 +89,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       if (!user) {
         const error = new Error();
-        error.code = IS_EXIST_ERROR_CODE;
+        error.code = AUTH_ERROR_CODE;
         throw error;
       }
 
@@ -97,7 +97,7 @@ module.exports.login = (req, res, next) => {
         .then((matched) => {
           if (!matched) {
             const error = new Error();
-            error.code = IS_EXIST_ERROR_CODE;
+            error.code = AUTH_ERROR_CODE;
             throw error;
           }
           const token = jwt.sign(
