@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const { errors, celebrate } = require('celebrate');
 const { NOT_FOUND_ERROR_CODE } = require('./utils/utils');
 const { errorMiddleware } = require('./middlewares/error');
@@ -22,6 +23,7 @@ mongoose.connect(DB_ADDRESS, {
   useNewUrlParser: true,
 });
 
+app.use(cookieParser());
 app.post('/signin', celebrate({ body: validateAuthentication }), login);
 app.post('/signup', celebrate({ body: validateUserBody }), createUser);
 app.use(authMiddleware);
