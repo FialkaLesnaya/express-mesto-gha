@@ -51,12 +51,8 @@ module.exports.createUser = (req, res, next) => {
 module.exports.getUserById = (req, res, next) => {
   const { userId } = req.params;
 
-  console.log('userId', userId);
-  console.log(req.params);
-
   return User.findById(userId)
     .then((user) => {
-      console.log('user', user);
       if (!user) {
         const error = new Error();
         error.code = NOT_FOUND_ERROR_CODE;

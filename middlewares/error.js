@@ -7,7 +7,6 @@ const {
 } = require('../utils/utils');
 
 module.exports.errorMiddleware = (err, _, res, next) => {
-  console.log(err.name, err.code);
   if (err.name === 'ValidationError' || err.name === 'CastError' || err.code === NOT_CORRECT_VALUE_ERROR_CODE) {
     return res.status(NOT_CORRECT_VALUE_ERROR_CODE).send({ message: 'Ошибка валидации данных' }).then(() => next());
   }
