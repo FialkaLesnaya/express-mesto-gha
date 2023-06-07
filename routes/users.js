@@ -11,7 +11,7 @@ const {
 
 router.get('/', getUsers);
 router.get('/me', getUsersMe);
-router.get('/:userId', celebrate({ body: validateUserId }), getUserById);
+router.get('/:userId', celebrate({ params: validateUserId }), getUserById);
 router.patch('/me', celebrate({ body: validateUserDetails }), updateUser);
 router.patch('/me/avatar', celebrate({ body: validateUserAvatar }), updateAvatar);
 
