@@ -107,6 +107,7 @@ module.exports.login = (req, res, next) => {
           );
 
           res.body = { token };
+          console.log(token);
 
           return res.json();
         });
@@ -114,8 +115,17 @@ module.exports.login = (req, res, next) => {
     .catch((error) => next(error));
 };
 
-module.exports.getUsersMe = (req, _, next) => {
+module.exports.getUsersMe = (req, res, next) => {
   const userId = req.user._id;
 
-  return this.getUserById(userId).catch((error) => next(error));
+  return User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        const error = new Error();
+        error.code = NOT_FOUND_ERROR_CODE;
+        throw error;
+      }
+      return res.send({ data: user });
+    })
+    .catch((error) => next(error));
 };
