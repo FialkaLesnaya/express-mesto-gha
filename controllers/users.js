@@ -4,7 +4,7 @@ const User = require('../models/user');
 const {
   NOT_FOUND_ERROR_CODE,
   handleError,
-  IS_EXIST_EMAIL_ERROR_CODE,
+  IS_EXIST_ERROR_CODE,
 } = require('../utils/utils');
 
 module.exports.getUsers = (req, res) => {
@@ -24,7 +24,7 @@ module.exports.createUser = (req, res, next) => {
   return User.findOne({ email }).then((existingUser) => {
     if (existingUser) {
       const error = new Error();
-      error.code = IS_EXIST_EMAIL_ERROR_CODE;
+      error.code = IS_EXIST_ERROR_CODE;
       throw error;
     }
 
@@ -74,20 +74,24 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => res.send({ data: user }));
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findOne({ email })
     .select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        const error = new Error();
+        error.code = IS_EXIST_ERROR_CODE;
+        throw error;
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
+            const error = new Error();
+            error.code = IS_EXIST_ERROR_CODE;
+            throw error;
           }
           const token = jwt.sign(
             { _id: user._id },
@@ -99,7 +103,8 @@ module.exports.login = (req, res) => {
 
           return res.json();
         });
-    });
+    })
+    .catch((error) => next(error));
 };
 
 module.exports.getUsersMe = (req) => {
