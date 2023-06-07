@@ -1,4 +1,6 @@
 const router = require('express').Router();
+const { celebrate } = require('celebrate');
+const { validateUserDetails, validateUserId, validateUserAvatar } = require('../utils/validators');
 const {
   getUsers,
   getUserById,
@@ -9,11 +11,8 @@ const {
 
 router.get('/', getUsers);
 router.get('/me', getUsersMe);
-// joi
-router.get('/:userId', getUserById);
-// joi
-router.patch('/me', updateUser);
-// joi
-router.patch('/me/avatar', updateAvatar);
+router.get('/:userId', celebrate({ body: validateUserId }), getUserById);
+router.patch('/me', celebrate({ body: validateUserDetails }), updateUser);
+router.patch('/me/avatar', celebrate({ body: validateUserAvatar }), updateAvatar);
 
 module.exports = router;

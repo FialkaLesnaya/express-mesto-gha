@@ -57,6 +57,7 @@ module.exports.addLike = (req, res, next) => {
 module.exports.removeLike = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
+  console.log('ssss', userId);
 
   return Card.findByIdAndUpdate(
     cardId,

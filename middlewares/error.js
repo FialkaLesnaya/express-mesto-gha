@@ -6,8 +6,9 @@ const {
   NOT_FOUND_ERROR_CODE,
 } = require('../utils/utils');
 
-module.exports.errorMiddleware = (err, req, res, next) => {
-  if (err.name === 'ValidationError' || err.code === NOT_CORRECT_VALUE_ERROR_CODE) {
+module.exports.errorMiddleware = (err, _, res, next) => {
+  console.log(err.name, err.code);
+  if (err.name === 'ValidationError' || err.name === 'CastError' || err.code === NOT_CORRECT_VALUE_ERROR_CODE) {
     return res.status(NOT_CORRECT_VALUE_ERROR_CODE).send({ message: 'Ошибка валидации данных' }).then(() => next());
   }
 
