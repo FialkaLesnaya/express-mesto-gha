@@ -17,6 +17,6 @@ module.exports.authMiddleware = (req, res, next) => {
 
     return next();
   } catch (error) {
-    return res.status(AUTH_ERROR_CODE).send({ message: 'Недействительный токен авторизации' });
+    return res.status(AUTH_ERROR_CODE).send({ message: `Недействительный токен авторизации ${token}` });
   }
 };
