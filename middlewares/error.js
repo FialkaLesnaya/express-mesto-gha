@@ -17,7 +17,7 @@ module.exports.errorMiddleware = (err, _, res, next) => {
   }
 
   if (err.code === IS_EXIST_ERROR_CODE) {
-    return res.status(IS_EXIST_ERROR_CODE).send({ message: 'По указанным данным уже существует элемент' }).then(() => next());
+    return res.status(IS_EXIST_ERROR_CODE).send({ message: 'По указанным данным уже существует пользователь' }).then(() => next());
   }
 
   if (err.code === NO_ACCESS_ERROR_CODE) {
