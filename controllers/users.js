@@ -3,13 +3,14 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
   NOT_FOUND_ERROR_CODE,
-  handleError,
   IS_EXIST_ERROR_CODE,
 } = require('../utils/utils');
+const { JWT_SECRET } = require('../utils/config');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({ data: users }));
+    .then((users) => res.send({ data: users }))
+    .catch((error) => next(error));
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -46,32 +47,37 @@ module.exports.createUser = (req, res, next) => {
   }).catch((error) => next(error));
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   const { userId } = req.params;
 
   return User.findById(userId)
     .then((user) => {
       if (!user) {
-        return handleError(res, NOT_FOUND_ERROR_CODE, 'Пользователь не найден');
+        const error = new Error();
+        error.code = NOT_FOUND_ERROR_CODE;
+        throw error;
       }
       return res.send({ data: user });
-    });
+    })
+    .catch((error) => next(error));
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
   const userId = req.user._id;
 
   return User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
-    .then((user) => res.send({ data: user }));
+    .then((user) => res.send({ data: user }))
+    .catch((error) => next(error));
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const userId = req.user._id;
 
   return User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
-    .then((user) => res.send({ data: user }));
+    .then((user) => res.send({ data: user }))
+    .catch((error) => next(error));
 };
 
 module.exports.login = (req, res, next) => {
@@ -95,7 +101,7 @@ module.exports.login = (req, res, next) => {
           }
           const token = jwt.sign(
             { _id: user._id },
-            'jwt',
+            JWT_SECRET,
             { expiresIn: '7d' },
           );
 
@@ -107,8 +113,8 @@ module.exports.login = (req, res, next) => {
     .catch((error) => next(error));
 };
 
-module.exports.getUsersMe = (req) => {
+module.exports.getUsersMe = (req, _, next) => {
   const userId = req.user._id;
 
-  return this.getUserById(userId);
+  return this.getUserById(userId).catch((error) => next(error));
 };

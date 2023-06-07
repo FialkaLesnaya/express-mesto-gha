@@ -1,32 +1,35 @@
 const Card = require('../models/card');
 const {
   NOT_FOUND_ERROR_CODE,
-  handleError,
+  NO_ACCESS_ERROR_CODE,
 } = require('../utils/utils');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }));
+    .then((cards) => res.send({ data: cards }))
+    .catch((error) => next(error));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const userId = req.user._id;
 
   return Card.create({
     name, link, owner: userId,
   })
-    .then((card) => res.send({ data: card }));
+    .then((card) => res.send({ data: card }))
+    .catch((error) => next(error));
 };
 
-module.exports.getCardById = (req, res) => {
+module.exports.getCardById = (req, res, next) => {
   const { cardId } = req.params;
 
   return Card.findById(cardId)
-    .then((card) => res.send({ data: card }));
+    .then((card) => res.send({ data: card }))
+    .catch((error) => next(error));
 };
 
-module.exports.addLike = (req, res) => {
+module.exports.addLike = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
 
@@ -37,13 +40,21 @@ module.exports.addLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return handleError(res, NOT_FOUND_ERROR_CODE, 'Карточка не найдена');
+        const error = new Error();
+        error.code = NOT_FOUND_ERROR_CODE;
+        throw error;
+      }
+      if (card.userId !== userId) {
+        const error = new Error();
+        error.code = NO_ACCESS_ERROR_CODE;
+        throw error;
       }
       return res.send({ data: card });
-    });
+    })
+    .catch((error) => next(error));
 };
 
-module.exports.removeLike = (req, res) => {
+module.exports.removeLike = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
 
@@ -54,25 +65,38 @@ module.exports.removeLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return handleError(res, NOT_FOUND_ERROR_CODE, 'Карточка не найдена');
+        const error = new Error();
+        error.code = NOT_FOUND_ERROR_CODE;
+        throw error;
+      }
+      if (card.userId !== userId) {
+        const error = new Error();
+        error.code = NO_ACCESS_ERROR_CODE;
+        throw error;
       }
       return res.send({ data: card });
-    });
+    })
+    .catch((error) => next(error));
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
 
   return Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
-        return handleError(res, NOT_FOUND_ERROR_CODE, 'Карточка не найдена');
+        const error = new Error();
+        error.code = NOT_FOUND_ERROR_CODE;
+        throw error;
       }
 
       if (card.userId !== userId) {
-        return handleError(res, 409, 'Нет разрешения на удаление этой карточки');
+        const error = new Error();
+        error.code = NO_ACCESS_ERROR_CODE;
+        throw error;
       }
       return res.send({ data: card });
-    });
+    })
+    .catch((error) => next(error));
 };

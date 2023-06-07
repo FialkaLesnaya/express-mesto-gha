@@ -2,24 +2,23 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors, celebrate } = require('celebrate');
-const { NOT_FOUND_ERROR_CODE, handleError } = require('./utils/utils');
+const { NOT_FOUND_ERROR_CODE } = require('./utils/utils');
 const { errorMiddleware } = require('./middlewares/error');
 const { authMiddleware } = require('./middlewares/auth');
 const { validateUserBody, validateAuthentication } = require('./utils/validators');
+const { PORT, DB_ADDRESS } = require('./utils/config');
 
 const {
   createUser,
   login,
 } = require('./controllers/users');
 
-const PORT = 3000;
-
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://127.0.0.1/mestodb', {
+mongoose.connect(DB_ADDRESS, {
   useNewUrlParser: true,
 });
 
@@ -32,8 +31,8 @@ app.use('/cards', require('./routes/cards'));
 app.use(errors());
 app.use(errorMiddleware);
 
-app.use((req, res) => {
-  handleError(res, NOT_FOUND_ERROR_CODE, 'Путь неизвестен');
+app.use((_, res) => {
+  res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Путь неизвестен' });
 });
 
 app.listen(PORT, () => {
