@@ -12,7 +12,7 @@ module.exports.authMiddleware = (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, 'jwt');
-
+    req.headers.authorization = token;
     req.user = payload;
 
     return next();

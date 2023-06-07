@@ -108,7 +108,7 @@ module.exports.login = (req, res, next) => {
 
           res.body = { token };
 
-          return res.json();
+          return res.json({ token });
         });
     })
     .catch((error) => next(error));
