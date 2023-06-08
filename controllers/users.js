@@ -46,7 +46,14 @@ module.exports.createUser = (req, res, next) => {
         avatar: user.avatar,
         email: user.email,
       }));
-  }).catch((error) => next(error));
+  })
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        return next(error);
+      }
+
+      return next(error);
+    });
 };
 
 module.exports.getUserById = (req, res, next) => {

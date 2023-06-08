@@ -19,7 +19,13 @@ module.exports.createCard = (req, res, next) => {
     name, link, owner: userId,
   })
     .then((card) => res.status(CREATION_SUCCESS_CODE).send({ data: card }))
-    .catch((error) => next(error));
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        return next(error);
+      }
+
+      return next(error);
+    });
 };
 
 module.exports.getCardById = (req, res, next) => {
@@ -34,11 +40,7 @@ module.exports.addLike = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
 
-  return Card.findByIdAndUpdate(
-    cardId,
-    { $addToSet: { likes: userId } },
-    { new: true, runValidators: true },
-  )
+  return Card.findById(cardId)
     .then((card) => {
       if (!card) {
         const error = new Error();
@@ -51,8 +53,14 @@ module.exports.addLike = (req, res, next) => {
         error.code = NO_ACCESS_ERROR_CODE;
         throw error;
       }
-      return res.send({ data: card });
+
+      return Card.findByIdAndUpdate(
+        cardId,
+        { $pull: { likes: userId } },
+        { new: true, runValidators: true },
+      );
     })
+    .then((card) => res.send({ data: card }))
     .catch((error) => next(error));
 };
 
@@ -60,24 +68,27 @@ module.exports.removeLike = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
 
-  return Card.findByIdAndUpdate(
-    cardId,
-    { $pull: { likes: userId } },
-    { new: true, runValidators: true },
-  )
+  return Card.findById(cardId)
     .then((card) => {
       if (!card) {
         const error = new Error();
         error.code = NOT_FOUND_ERROR_CODE;
         throw error;
       }
+
       if (card.owner.toString() !== userId) {
         const error = new Error();
         error.code = NO_ACCESS_ERROR_CODE;
         throw error;
       }
-      return res.send({ data: card });
+
+      return Card.findByIdAndUpdate(
+        cardId,
+        { $pull: { likes: userId } },
+        { new: true, runValidators: true },
+      );
     })
+    .then((card) => res.send({ data: card }))
     .catch((error) => next(error));
 };
 
@@ -85,7 +96,7 @@ module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
 
-  return Card.findByIdAndRemove(cardId)
+  return Card.findById(cardId)
     .then((card) => {
       if (!card) {
         const error = new Error();
@@ -98,7 +109,9 @@ module.exports.deleteCard = (req, res, next) => {
         error.code = NO_ACCESS_ERROR_CODE;
         throw error;
       }
-      return res.send({ data: card });
+
+      return Card.deleteOne(card).then(() => card);
     })
+    .then((card) => res.send({ data: card }))
     .catch((error) => next(error));
 };
