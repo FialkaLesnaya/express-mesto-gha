@@ -99,8 +99,7 @@ module.exports.deleteCard = (req, res, next) => {
         return next(new NoAccessError('Карточка не была создана вами'));
       }
 
-      return Card.deleteOne(card).then(() => card);
+      return Card.deleteOne(card).then(() => res.send({ data: card }));
     })
-    .then((card) => res.send({ data: card }))
     .catch((error) => next(error));
 };
