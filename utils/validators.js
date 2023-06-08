@@ -34,7 +34,7 @@ module.exports.validateUserAvatar = Joi.object({
 
 module.exports.validateCardBody = Joi.object({
   name: Joi.string().min(2).max(30).required(),
-  link: Joi.string().pattern(new RegExp(REG_EXP_URL.source)).required(),
+  link: Joi.string().pattern(REG_EXP_URL).required(),
   owner: Joi.string(),
   likes: Joi.array().items(Joi.string()),
   createdAt: Joi.date(),

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { REG_EXP_URL } = require('../utils/utils');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,7 +13,7 @@ const cardSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        return /^https?:\/\/(?:www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+$/.test(v);
+        return REG_EXP_URL.test(v);
       },
       message: (props) => `${props.value} данное значение не соответствует формату ссылки`,
     },
