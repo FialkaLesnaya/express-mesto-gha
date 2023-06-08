@@ -1,16 +1,12 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../utils/config');
-const {
-  AUTH_ERROR_CODE,
-} = require('../utils/utils');
+const AuthError = require('../errors/authError');
 
 module.exports.authMiddleware = (req, res, next) => {
   let token = req.headers.authorization || req.body.token || req.cookies.token;
 
   if (!token) {
-    const error = new Error();
-    error.code = AUTH_ERROR_CODE;
-    return next(error);
+    return next(new AuthError('Отсутствует токен'));
   }
 
   if (token.startsWith('Bearer ')) {
@@ -24,7 +20,6 @@ module.exports.authMiddleware = (req, res, next) => {
 
     return next();
   } catch (error) {
-    error.code = AUTH_ERROR_CODE;
-    return next(error);
+    return next(new AuthError('Недействтельный токен'));
   }
 };

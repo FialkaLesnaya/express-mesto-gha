@@ -2,12 +2,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
-  NOT_FOUND_ERROR_CODE,
-  IS_EXIST_ERROR_CODE,
-  AUTH_ERROR_CODE,
   CREATION_SUCCESS_CODE,
 } = require('../utils/utils');
 const { JWT_SECRET } = require('../utils/config');
+const NotFoundError = require('../errors/notFoundError');
+const IsExistError = require('../errors/isExistError');
+const NotCorrectValueError = require('../errors/notCorrectValueError');
+const AuthError = require('../errors/authError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -26,9 +27,7 @@ module.exports.createUser = (req, res, next) => {
 
   return User.findOne({ email }).then((existingUser) => {
     if (existingUser) {
-      const error = new Error();
-      error.code = IS_EXIST_ERROR_CODE;
-      throw error;
+      return next(new IsExistError());
     }
 
     return bcrypt.hash(password, 10)
@@ -49,7 +48,7 @@ module.exports.createUser = (req, res, next) => {
   })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        return next(error);
+        return next(new NotCorrectValueError());
       }
 
       return next(error);
@@ -62,9 +61,7 @@ module.exports.getUserById = (req, res, next) => {
   return User.findById(userId)
     .then((user) => {
       if (!user) {
-        const error = new Error();
-        error.code = NOT_FOUND_ERROR_CODE;
-        throw error;
+        return next(new NotFoundError('Пользователя не существует'));
       }
       return res.send({ data: user });
     })
@@ -96,17 +93,13 @@ module.exports.login = (req, res, next) => {
     .select('+password')
     .then((user) => {
       if (!user) {
-        const error = new Error();
-        error.code = AUTH_ERROR_CODE;
-        throw error;
+        return next(new AuthError('Не верно указан логин или пароль'));
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            const error = new Error();
-            error.code = AUTH_ERROR_CODE;
-            throw error;
+            return next(new AuthError('Не верно указан логин или пароль'));
           }
           const token = jwt.sign(
             { _id: user._id },
@@ -128,9 +121,7 @@ module.exports.getUsersMe = (req, res, next) => {
   return User.findById(userId)
     .then((user) => {
       if (!user) {
-        const error = new Error();
-        error.code = NOT_FOUND_ERROR_CODE;
-        throw error;
+        return next(new NotFoundError('Пользователя не существует'));
       }
       return res.send({ data: user });
     })

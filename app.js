@@ -5,11 +5,11 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { errors, celebrate } = require('celebrate');
-const { NOT_FOUND_ERROR_CODE } = require('./utils/utils');
 const { errorMiddleware } = require('./middlewares/error');
 const { authMiddleware } = require('./middlewares/auth');
 const { validateUserBody, validateAuthentication } = require('./utils/validators');
 const { PORT, DB_ADDRESS } = require('./utils/config');
+const NotFoundError = require('./errors/notFoundError');
 
 const {
   createUser,
@@ -42,11 +42,7 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.use(errors());
-app.use((_, __, next) => {
-  const error = new Error();
-  error.code = NOT_FOUND_ERROR_CODE;
-  next(error);
-});
+app.use((_, __, next) => next(new NotFoundError('Недействительный путь')));
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {

@@ -1,9 +1,10 @@
 const Card = require('../models/card');
 const {
-  NOT_FOUND_ERROR_CODE,
-  NO_ACCESS_ERROR_CODE,
   CREATION_SUCCESS_CODE,
 } = require('../utils/utils');
+const NotFoundError = require('../errors/notFoundError');
+const NotCorrectValueError = require('../errors/notCorrectValueError');
+const NoAccessError = require('../errors/noAccessError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -21,7 +22,7 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.status(CREATION_SUCCESS_CODE).send({ data: card }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        return next(error);
+        return next(new NotCorrectValueError());
       }
 
       return next(error);
@@ -43,15 +44,11 @@ module.exports.addLike = (req, res, next) => {
   return Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        const error = new Error();
-        error.code = NOT_FOUND_ERROR_CODE;
-        throw error;
+        return next(new NotFoundError('Карточка не найдена'));
       }
 
       if (card.owner.toString() !== userId) {
-        const error = new Error();
-        error.code = NO_ACCESS_ERROR_CODE;
-        throw error;
+        return next(new NoAccessError('Карточка не была создана вами'));
       }
 
       return Card.findByIdAndUpdate(
@@ -71,15 +68,11 @@ module.exports.removeLike = (req, res, next) => {
   return Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        const error = new Error();
-        error.code = NOT_FOUND_ERROR_CODE;
-        throw error;
+        return next(new NotFoundError('Карточка не найдена'));
       }
 
       if (card.owner.toString() !== userId) {
-        const error = new Error();
-        error.code = NO_ACCESS_ERROR_CODE;
-        throw error;
+        return next(new NoAccessError('Карточка не была создана вами'));
       }
 
       return Card.findByIdAndUpdate(
@@ -99,15 +92,11 @@ module.exports.deleteCard = (req, res, next) => {
   return Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        const error = new Error();
-        error.code = NOT_FOUND_ERROR_CODE;
-        throw error;
+        return next(new NotFoundError('Карточка не найдена'));
       }
 
       if (card.owner.toString() !== userId) {
-        const error = new Error();
-        error.code = NO_ACCESS_ERROR_CODE;
-        throw error;
+        return next(new NoAccessError('Карточка не была создана вами'));
       }
 
       return Card.deleteOne(card).then(() => card);
