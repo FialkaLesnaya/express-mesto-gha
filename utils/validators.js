@@ -1,9 +1,10 @@
 const Joi = require('joi');
+const { REG_EXP_URL } = require('./utils');
 
 module.exports.validateUserBody = Joi.object({
   name: Joi.string().min(2).max(30),
   about: Joi.string().min(2).max(30),
-  avatar: Joi.string().pattern(/^https?:\/\/(?:www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+$/),
+  avatar: Joi.string().pattern(REG_EXP_URL),
   email: Joi.string().email().required(),
   password: Joi.string().required(),
 });
@@ -14,26 +15,26 @@ module.exports.validateAuthentication = Joi.object({
 });
 
 module.exports.validateUserId = Joi.object({
-  userId: Joi.string().pattern(/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$/).required(),
+  userId: Joi.string().length(24).hex().required(),
 });
 
 module.exports.validateCardId = Joi.object({
-  cardId: Joi.string().pattern(/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$/).required(),
+  cardId: Joi.string().length(24).hex().required(),
 });
 
 module.exports.validateUserDetails = Joi.object({
   name: Joi.string().min(2).max(30),
   about: Joi.string().min(2).max(30),
-  avatar: Joi.string().pattern(/^https?:\/\/(?:www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+$/),
+  avatar: Joi.string().pattern(REG_EXP_URL),
 });
 
 module.exports.validateUserAvatar = Joi.object({
-  avatar: Joi.string().pattern(/^https?:\/\/(?:www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+$/),
+  avatar: Joi.string().pattern(REG_EXP_URL),
 });
 
 module.exports.validateCardBody = Joi.object({
   name: Joi.string().min(2).max(30).required(),
-  link: Joi.string().pattern(/^https?:\/\/(?:www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+$/).required(),
+  link: Joi.string().pattern(new RegExp(REG_EXP_URL.source)).required(),
   owner: Joi.string(),
   likes: Joi.array().items(Joi.string()),
   createdAt: Joi.date(),
