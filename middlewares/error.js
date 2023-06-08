@@ -13,7 +13,7 @@ module.exports.errorMiddleware = (err, _, res, next) => {
   }
 
   if (err.code === AUTH_ERROR_CODE) {
-    return res.status(AUTH_ERROR_CODE).send({ message: 'Не верный пароль или логин' }).then(() => next());
+    return res.status(AUTH_ERROR_CODE).send({ message: 'Проблемы при авторизации/регистрации' }).then(() => next());
   }
 
   if (err.code === IS_EXIST_ERROR_CODE) {

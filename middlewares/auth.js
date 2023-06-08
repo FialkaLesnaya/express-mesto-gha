@@ -8,7 +8,9 @@ module.exports.authMiddleware = (req, res, next) => {
   let token = req.headers.authorization || req.body.token || req.cookies.token;
 
   if (!token) {
-    return res.status(AUTH_ERROR_CODE).send({ message: 'Отсутствует токен авторизации' });
+    const error = new Error();
+    error.code = AUTH_ERROR_CODE;
+    return next(error);
   }
 
   if (token.startsWith('Bearer ')) {
@@ -22,6 +24,7 @@ module.exports.authMiddleware = (req, res, next) => {
 
     return next();
   } catch (error) {
-    return res.status(AUTH_ERROR_CODE).send({ message: 'Недействительный токен авторизации' });
+    error.code = AUTH_ERROR_CODE;
+    return next(error);
   }
 };
