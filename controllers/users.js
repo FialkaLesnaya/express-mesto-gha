@@ -5,6 +5,7 @@ const {
   NOT_FOUND_ERROR_CODE,
   IS_EXIST_ERROR_CODE,
   AUTH_ERROR_CODE,
+  CREATION_SUCCESS_CODE,
 } = require('../utils/utils');
 const { JWT_SECRET } = require('../utils/config');
 
@@ -38,7 +39,7 @@ module.exports.createUser = (req, res, next) => {
         email,
         password: hash,
       }))
-      .then((user) => res.send({
+      .then((user) => res.status(CREATION_SUCCESS_CODE).send({
         _id: user._id,
         name: user.name,
         about: user.about,

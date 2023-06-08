@@ -2,6 +2,7 @@ const Card = require('../models/card');
 const {
   NOT_FOUND_ERROR_CODE,
   NO_ACCESS_ERROR_CODE,
+  CREATION_SUCCESS_CODE,
 } = require('../utils/utils');
 
 module.exports.getCards = (req, res, next) => {
@@ -17,7 +18,7 @@ module.exports.createCard = (req, res, next) => {
   return Card.create({
     name, link, owner: userId,
   })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.status(CREATION_SUCCESS_CODE).send({ data: card }))
     .catch((error) => next(error));
 };
 
